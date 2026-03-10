@@ -480,6 +480,9 @@
       border-color: var(--color-primary);
       color: white;
     }
+    .date-pill.active .day-label::after {
+      content: ' ✓';
+    }
     .date-pill .day-label { font-size: 11px; opacity: 0.7; }
     .date-pill .day-num { font-size: 22px; font-weight: 700; line-height: 1; }
     .date-pill .month-label { font-size: 11px; opacity: 0.7; }
@@ -713,7 +716,7 @@
             <div class="month-label">Apr</div>
           </div>
           <div class="date-pill active">
-            <div class="day-label">MON ✓</div>
+            <div class="day-label">MON</div>
             <div class="day-num">6</div>
             <div class="month-label">Apr</div>
           </div>
