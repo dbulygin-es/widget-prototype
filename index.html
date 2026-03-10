@@ -592,6 +592,57 @@
 
     <!-- SCREEN 3: Product detail -->
     <section class="screen" id="screen-3">
+      <div class="widget-header">
+        <a class="header-back" data-go="screen-2">‹ Back to Products</a>
+        <div class="header-actions">
+          <div class="header-cart">
+            🛍
+            <span class="cart-badge">1</span>
+          </div>
+          <div class="header-lang">🇬🇧 ∨</div>
+          <span class="header-close">✕</span>
+        </div>
+      </div>
+
+      <div class="screen-content">
+        <div class="step-row">
+          <span class="step-badge">1</span>
+          <span class="step-label">Menu options</span>
+        </div>
+        <div class="selected-product-card">
+          <img src="./widget screens/2026-03-10 16.10.24.jpg" alt="NENI's Signature Easter box for 2" />
+          <div class="selected-product-card-body">
+            <h4>NENI's Signature Easter box for 2 - at home</h4>
+            <p>From €40.00 p.p.</p>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <span class="step-badge">2</span>
+          <span class="step-label">Number of people</span>
+        </div>
+        <div class="stepper-row">
+          <div></div>
+          <div class="stepper-controls">
+            <button class="stepper-btn" id="qty-minus">−</button>
+            <span class="stepper-value" id="qty-value">2</span>
+            <button class="stepper-btn" id="qty-plus">+</button>
+          </div>
+        </div>
+
+        <div class="step-row">
+          <span class="step-badge">3</span>
+          <span class="step-label">Date</span>
+        </div>
+        <div class="date-row">
+          <span>06-04-2026</span>
+          <span>📅</span>
+        </div>
+
+        <button class="btn-primary" data-go="screen-4">Add to Cart</button>
+      </div>
+
+      <div class="widget-footer">Powered by <strong>sous</strong></div>
     </section>
 
     <!-- SCREEN 4: Delivery details -->
@@ -617,6 +668,17 @@
         document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
       });
+    });
+    // Quantity stepper on screen 3
+    const qtyValue = document.getElementById('qty-value');
+    document.getElementById('qty-minus').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const current = parseInt(qtyValue.textContent);
+      if (current > 1) qtyValue.textContent = current - 1;
+    });
+    document.getElementById('qty-plus').addEventListener('click', function(e) {
+      e.stopPropagation();
+      qtyValue.textContent = parseInt(qtyValue.textContent) + 1;
     });
   </script>
 </body>
