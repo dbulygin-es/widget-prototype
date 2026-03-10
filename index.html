@@ -954,6 +954,7 @@
     // ─── State ───
     let deliveryMode = 'local';
     let enteredAddress = '';
+    let returnScreen = null; // set when user corrects address mid-journey
     let selectedDate = null; // Date object, null until screen-3 is first visited
     let calYear  = new Date().getFullYear();
     let calMonth = new Date().getMonth(); // 0-indexed
@@ -1192,6 +1193,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
 
       // Address bar → return to address entry with pre-filled input
       if (e.target.closest('#address-bar')) {
+        returnScreen = document.querySelector('.screen.active').id;
         document.getElementById('address-input').value = enteredAddress;
         navigateTo('screen-address');
         return;
@@ -1211,7 +1213,9 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
           }
           enteredAddress = val;
         }
-        navigateTo(dest);
+        const destination = (active && active.id === 'screen-address' && returnScreen) ? returnScreen : dest;
+        returnScreen = null;
+        navigateTo(destination);
         return;
       }
 
