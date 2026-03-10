@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!--
+    SOUS Commerce Widget — Clickable Prototype
+    Purpose: Developer handoff — inspect layout, tokens, and interaction model
+    Screens: Category selection → Product listing → Product detail → Delivery details
+    Figma: https://www.figma.com/board/I4CrdqSNwGMcq0pYa8bQno/SOUS--Funnel
+    Last updated: 2026-03-10
+  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SOUS Widget Prototype</title>
@@ -15,6 +22,8 @@
       --color-white: #FFFFFF;
       --color-selected-bg: #E8EBF5;
       --color-selected-border: #0D1B3E;
+      --color-accent: #2563EB;
+      --color-canvas: #CCCCCC;
 
       --radius-card: 12px;
       --radius-button: 8px;
@@ -27,7 +36,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: var(--font-sans);
-      background: #CCCCCC;
+      background: var(--color-canvas);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -433,15 +442,15 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: #2563EB;
+      background: var(--color-accent);
     }
-    .radio-circle.checked { border-color: #2563EB; }
+    .radio-circle.checked { border-color: var(--color-accent); }
     .radio-row-label { font-size: 15px; color: var(--color-text); font-weight: 500; }
 
     /* ─── Location Card (Screen 4) ─── */
     .location-card {
       background: var(--color-white);
-      border: 2px solid #2563EB;
+      border: 2px solid var(--color-accent);
       border-radius: var(--radius-card);
       padding: 14px 16px;
       display: flex;
