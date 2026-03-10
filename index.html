@@ -1178,8 +1178,12 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
         input.value = 'Detecting…';
         navigator.geolocation.getCurrentPosition(
           pos => {
-            // Reverse geocode stub — just show coordinates in the field
-            input.value = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`, {
+              headers: { 'User-Agent': 'widget-prototype' }
+            })
+              .then(r => r.json())
+              .then(data => { input.value = data.display_name || `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`; })
+              .catch(() => { input.value = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`; });
           },
           () => { input.value = ''; }
         );
