@@ -24,6 +24,8 @@
       --color-selected-border: #0D1B3E;
       --color-accent: #2563EB;
       --color-canvas: #CCCCCC;
+      --color-notice-amber: #92400E;
+      --color-notice-amber-bg: #FEF3C7;
 
       --radius-card: 12px;
       --radius-button: 8px;
@@ -498,6 +500,66 @@
       font-size: 13px;
       color: var(--color-muted);
       margin-bottom: 12px;
+    }
+
+    /* ─── Address Input (screen-address) ─── */
+    .address-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      font-size: 15px;
+      font-family: var(--font-sans);
+      color: var(--color-text);
+      background: var(--color-white);
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .address-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* ─── Text link button ─── */
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 8px 0;
+      display: block;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* ─── Notice pill ─── */
+    .notice-pill {
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+    .notice-pill.amber {
+      background: var(--color-notice-amber-bg);
+      color: var(--color-notice-amber);
+    }
+
+    /* ─── Delivery option expanded section ─── */
+    .delivery-option-expanded {
+      padding: 16px 16px 4px 16px;
+      background: var(--color-bg);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ─── Radio row sub-label ─── */
+    .radio-row-sublabel {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 2px;
     }
   </style>
 </head>
