@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOUS Widget Prototype</title>
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --color-primary: #0D1B3E;
+      --color-text: #111111;
+      --color-muted: #6B7280;
+      --color-border: #E5E7EB;
+      --color-bg: #F3F4F6;
+      --color-white: #FFFFFF;
+      --color-selected-bg: #E8EBF5;
+      --color-selected-border: #0D1B3E;
+
+      --radius-card: 12px;
+      --radius-button: 8px;
+      --radius-tab: 999px;
+
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: #CCCCCC;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    /* ─── Widget Shell ─── */
+    .widget {
+      background: var(--color-bg);
+      width: 390px;
+      min-height: 600px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Screen visibility ─── */
+    .screen { display: none; flex-direction: column; flex: 1; }
+    .screen.active { display: flex; }
+
+    /* ─── Shared Header ─── */
+    .widget-header {
+      background: var(--color-white);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .header-back {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-cart {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .cart-badge {
+      position: absolute;
+      top: 0; right: 0;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .header-lang {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .header-close {
+      font-size: 20px;
+      color: var(--color-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* ─── Scrollable Content ─── */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px;
+    }
+
+    /* ─── Footer ─── */
+    .widget-footer {
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-muted);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-border);
+    }
+    .widget-footer strong {
+      color: var(--color-primary);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* ─── Category Tiles (Screen 1) ─── */
+    .screen-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .category-list { display: flex; flex-direction: column; gap: 12px; }
+    .category-tile {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+    }
+    .category-tile:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .category-tile img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .category-tile-text h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .category-tile-text p {
+      font-size: 13px;
+      color: var(--color-muted);
+      line-height: 1.4;
+    }
+
+    /* ─── Tab Pills (Screen 2) ─── */
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-tab);
+      border: 1px solid var(--color-border);
+      background: var(--color-white);
+      font-size: 13px;
+      color: var(--color-muted);
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+    .tab-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* ─── Product Grid (Screen 2) ─── */
+    .section-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 12px;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .product-card {
+      background: var(--color-white);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      transition: box-shadow 0.15s;
+    }
+    .product-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .product-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+    .product-card-body { padding: 10px; }
+    .product-card-body h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .product-card-body p {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .product-price {
+      font-size: 12px;
+      color: var(--color-muted);
+      font-weight: 500;
+    }
+
+    /* ─── Step Badges (Screens 3 & 4) ─── */
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    /* ─── Selected Product Card (Screen 3) ─── */
+    .selected-product-card {
+      background: var(--color-white);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-card);
+      width: 140px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .selected-product-card img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+    }
+    .selected-product-card-body { padding: 8px; }
+    .selected-product-card-body h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .selected-product-card-body p {
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    /* ─── Quantity Stepper (Screen 3) ─── */
+    .stepper-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-white);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stepper-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-white);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+    .stepper-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* ─── Date Input (Screen 3) ─── */
+    .date-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-white);
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border: 2px solid var(--color-primary);
+    }
+    .date-row span {
+      font-size: 15px;
+      color: var(--color-text);
+    }
+
+    /* ─── Add to Cart Button ─── */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-button);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* ─── Checkout Progress (Screen 4) ─── */
+    .checkout-progress {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 16px;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .progress-step.active { color: var(--color-text); font-weight: 600; }
+    .progress-step.inactive { color: var(--color-muted); }
+    .progress-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .progress-step.active .progress-badge { background: var(--color-primary); color: white; }
+    .progress-step.inactive .progress-badge { background: var(--color-border); color: var(--color-muted); }
+    .progress-divider { flex: 1; height: 1px; background: var(--color-border); }
+
+    /* ─── Radio Rows (Screen 4) ─── */
+    .radio-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+    }
+    .radio-row.selected { background: var(--color-selected-bg); }
+    .radio-row-left { display: flex; align-items: center; gap: 12px; }
+    .radio-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radio-circle.checked::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2563EB;
+    }
+    .radio-circle.checked { border-color: #2563EB; }
+    .radio-row-label { font-size: 15px; color: var(--color-text); font-weight: 500; }
+
+    /* ─── Location Card (Screen 4) ─── */
+    .location-card {
+      background: var(--color-white);
+      border: 2px solid #2563EB;
+      border-radius: var(--radius-card);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .location-card-left { display: flex; align-items: center; gap: 10px; }
+    .location-name { font-size: 14px; font-weight: 600; color: var(--color-text); }
+    .location-address { font-size: 12px; color: var(--color-muted); }
+    .location-free { font-size: 13px; font-weight: 700; color: var(--color-text); }
+
+    /* ─── Date Pills (Screen 4) ─── */
+    .date-pills { display: flex; gap: 8px; margin-bottom: 20px; }
+    .date-pill {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--color-border);
+      background: var(--color-white);
+      text-align: center;
+      cursor: pointer;
+      min-width: 60px;
+    }
+    .date-pill.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+    .date-pill .day-label { font-size: 11px; opacity: 0.7; }
+    .date-pill .day-num { font-size: 22px; font-weight: 700; line-height: 1; }
+    .date-pill .month-label { font-size: 11px; opacity: 0.7; }
+
+    /* ─── Section Heading (Screen 4) ─── */
+    .section-heading {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 10px;
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--color-muted);
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+
+    <!-- SCREEN 1: Category selection -->
+    <section class="screen active" id="screen-1">
+    </section>
+
+    <!-- SCREEN 2: Product listing -->
+    <section class="screen" id="screen-2">
+    </section>
+
+    <!-- SCREEN 3: Product detail -->
+    <section class="screen" id="screen-3">
+    </section>
+
+    <!-- SCREEN 4: Delivery details -->
+    <section class="screen" id="screen-4">
+    </section>
+
+  </div>
+
+  <script>
+    // Navigation: any element with data-go="screen-id" navigates on click
+    document.addEventListener('click', function(e) {
+      const target = e.target.closest('[data-go]');
+      if (!target) return;
+      const dest = target.dataset.go;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(dest).classList.add('active');
+    });
+  </script>
+</body>
+</html>
