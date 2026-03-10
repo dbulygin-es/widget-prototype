@@ -897,155 +897,32 @@
         <div class="widget-footer">Powered by <strong>sous</strong></div>
       </section>
 
-      <!-- SCREEN 4-LOCAL: Delivery details (local delivery eligible) -->
-      <section class="screen" id="screen-4-local">
+      <!-- SCREEN 4: Delivery details (content rendered by renderScreen4()) -->
+      <section class="screen" id="screen-4">
         <div class="widget-header">
           <a class="header-back" data-go="screen-3">‹ Back to Cart</a>
           <div class="header-actions">
-            <div class="header-cart">
-              🛍
-              <span class="cart-badge">1</span>
-            </div>
+            <div class="header-cart">🛍<span class="cart-badge">1</span></div>
             <div class="header-lang">🇬🇧 ∨</div>
             <span class="header-close">✕</span>
           </div>
         </div>
-
         <div class="checkout-progress">
           <div class="progress-step active">
-            <span class="progress-badge">1</span>
-            Delivery details
+            <span class="progress-badge">1</span> Delivery details
           </div>
           <div class="progress-divider"></div>
           <div class="progress-step inactive">
-            <span class="progress-badge">2</span>
-            Payment method
+            <span class="progress-badge">2</span> Payment method
           </div>
           <div class="progress-divider"></div>
           <div class="progress-step inactive">
-            <span class="progress-badge">3</span>
-            Confirmation
+            <span class="progress-badge">3</span> Confirmation
           </div>
         </div>
-
-        <div class="screen-content">
-          <!-- Local delivery — selected and expanded -->
-          <div class="radio-row selected">
-            <div class="radio-row-left">
-              <div class="radio-circle checked"></div>
-              <span class="radio-row-label">Local delivery</span>
-            </div>
-            <span style="font-size:13px; font-weight:600; color:var(--color-primary)">€3.50</span>
-          </div>
-          <div class="delivery-option-expanded">
-            <p class="section-heading">Select delivery time</p>
-            <div class="date-pills" id="date-pills-local">
-              <!-- populated by JS on navigation -->
-            </div>
-            <div class="radio-row selected">
-              <div class="radio-row-left">
-                <div class="radio-circle checked"></div>
-                <span class="radio-row-label">17:00 – 18:00</span>
-              </div>
-            </div>
-            <div class="radio-row">
-              <div class="radio-row-left">
-                <div class="radio-circle"></div>
-                <span class="radio-row-label">18:00 – 19:00</span>
-              </div>
-            </div>
-            <div class="radio-row">
-              <div class="radio-row-left">
-                <div class="radio-circle"></div>
-                <span class="radio-row-label">19:00 – 20:00</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Nationwide delivery — unselected -->
-          <div class="radio-row" style="margin-top: 8px;">
-            <div class="radio-row-left">
-              <div class="radio-circle"></div>
-              <span class="radio-row-label">Nationwide delivery</span>
-            </div>
-            <span>🚚</span>
-          </div>
-
-          <!-- Pickup — unselected -->
-          <div class="radio-row">
-            <div class="radio-row-left">
-              <div class="radio-circle"></div>
-              <span class="radio-row-label">Pickup options</span>
-            </div>
-            <span>🏪</span>
-          </div>
+        <div class="screen-content" id="screen-4-content">
+          <!-- populated by renderScreen4() on Add to Cart -->
         </div>
-
-        <div class="widget-footer">Powered by <strong>sous</strong></div>
-      </section>
-
-      <!-- SCREEN 4-NATIONWIDE: Delivery details (local delivery not available) -->
-      <section class="screen" id="screen-4-nationwide">
-        <div class="widget-header">
-          <a class="header-back" data-go="screen-3">‹ Back to Cart</a>
-          <div class="header-actions">
-            <div class="header-cart">
-              🛍
-              <span class="cart-badge">1</span>
-            </div>
-            <div class="header-lang">🇬🇧 ∨</div>
-            <span class="header-close">✕</span>
-          </div>
-        </div>
-
-        <div class="checkout-progress">
-          <div class="progress-step active">
-            <span class="progress-badge">1</span>
-            Delivery details
-          </div>
-          <div class="progress-divider"></div>
-          <div class="progress-step inactive">
-            <span class="progress-badge">2</span>
-            Payment method
-          </div>
-          <div class="progress-divider"></div>
-          <div class="progress-step inactive">
-            <span class="progress-badge">3</span>
-            Confirmation
-          </div>
-        </div>
-
-        <div class="screen-content">
-          <span class="notice-pill amber">Local delivery not available at your address</span>
-
-          <!-- Nationwide — selected and expanded -->
-          <div class="radio-row selected">
-            <div class="radio-row-left">
-              <div class="radio-circle checked"></div>
-              <div>
-                <div class="radio-row-label">Nationwide delivery</div>
-                <div class="radio-row-sublabel">€5.95</div>
-              </div>
-            </div>
-            <span>🚚</span>
-          </div>
-          <div class="delivery-option-expanded">
-            <p class="section-heading">Select delivery date</p>
-            <div class="date-pills" id="date-pills-nationwide">
-              <!-- populated by JS on navigation -->
-            </div>
-          </div>
-
-          <!-- Pickup — unselected -->
-          <div class="radio-row">
-            <div class="radio-row-left">
-              <div class="radio-circle"></div>
-              <span class="radio-row-label">Pickup options</span>
-            </div>
-            <span>🏪</span>
-          </div>
-        </div>
-
         <div class="widget-footer">Powered by <strong>sous</strong></div>
       </section>
 
@@ -1088,26 +965,7 @@
       return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
     }
 
-    function buildDatePillsHTML(mode) {
-      const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-      const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const start = new Date();
-      if (mode === 'nationwide') start.setDate(start.getDate() + 1);
-      let html = '';
-      for (let i = 0; i < 5; i++) {
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
-        const active = i === 0 ? ' active' : '';
-        html += `<div class="date-pill${active}">
-          <div class="day-label">${DAYS[d.getDay()]}</div>
-          <div class="day-num">${d.getDate()}</div>
-          <div class="month-label">${MONTHS[d.getMonth()]}</div>
-        </div>`;
-      }
-      return html;
-    }
-
-    const MONTH_NAMES = ['January','February','March','April','May','June',
+const MONTH_NAMES = ['January','February','March','April','May','June',
       'July','August','September','October','November','December'];
 
     function renderCalendar() {
@@ -1151,6 +1009,79 @@
       }
 
       document.getElementById('cal-grid').innerHTML = html;
+    }
+
+    function renderScreen4() {
+      const isLocal        = getDeliveryMethod() === 'local';
+      const isNationwideZone = deliveryMode === 'nationwide';
+      const dispatchDate   = selectedDate ? formatDateShort(selectedDate) : '—';
+      let html = '';
+
+      if (!isLocal && isNationwideZone) {
+        html += `<span class="notice-pill amber">Local delivery not available at your address</span>`;
+      }
+
+      if (isLocal) {
+        html += `
+          <div class="radio-row selected">
+            <div class="radio-row-left">
+              <div class="radio-circle checked"></div>
+              <span class="radio-row-label">Local delivery</span>
+            </div>
+            <span style="font-size:13px;font-weight:600;color:var(--color-primary)">€3.50</span>
+          </div>
+          <div class="delivery-option-expanded">
+            <p class="section-heading">Select delivery time</p>
+            <div class="radio-row selected">
+              <div class="radio-row-left">
+                <div class="radio-circle checked"></div>
+                <span class="radio-row-label">17:00 – 18:00</span>
+              </div>
+            </div>
+            <div class="radio-row">
+              <div class="radio-row-left">
+                <div class="radio-circle"></div>
+                <span class="radio-row-label">18:00 – 19:00</span>
+              </div>
+            </div>
+            <div class="radio-row">
+              <div class="radio-row-left">
+                <div class="radio-circle"></div>
+                <span class="radio-row-label">19:00 – 20:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="radio-row" style="margin-top:8px">
+            <div class="radio-row-left">
+              <div class="radio-circle"></div>
+              <span class="radio-row-label">Nationwide delivery</span>
+            </div>
+            <span>🚚</span>
+          </div>`;
+      } else {
+        html += `
+          <div class="radio-row selected">
+            <div class="radio-row-left">
+              <div class="radio-circle checked"></div>
+              <div>
+                <div class="radio-row-label">Nationwide delivery</div>
+                <div class="radio-row-sublabel">Ships ${dispatchDate} · €5.95</div>
+              </div>
+            </div>
+            <span>🚚</span>
+          </div>`;
+      }
+
+      html += `
+        <div class="radio-row">
+          <div class="radio-row-left">
+            <div class="radio-circle"></div>
+            <span class="radio-row-label">Pickup options</span>
+          </div>
+          <span>🏪</span>
+        </div>`;
+
+      document.getElementById('screen-4-content').innerHTML = html;
     }
 
     function updateAddressBar(activeScreenId) {
@@ -1258,24 +1189,10 @@
         return;
       }
 
-      // Add to Cart — route by deliveryMode, build date pills
+      // Add to Cart
       if (e.target.closest('#btn-add-to-cart')) {
-        const dest = deliveryMode === 'local' ? 'screen-4-local' : 'screen-4-nationwide';
-        navigateTo(dest);
-        if (dest === 'screen-4-local') {
-          document.getElementById('date-pills-local').innerHTML = buildDatePillsHTML('local');
-        } else {
-          document.getElementById('date-pills-nationwide').innerHTML = buildDatePillsHTML('nationwide');
-        }
-        return;
-      }
-
-      // Date pill selection — toggle active within sibling pills
-      const pill = e.target.closest('.date-pill');
-      if (pill) {
-        e.stopPropagation();
-        pill.parentElement.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
+        renderScreen4();
+        navigateTo('screen-4');
         return;
       }
     });
