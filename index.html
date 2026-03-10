@@ -858,16 +858,21 @@
       const goEl = e.target.closest('[data-go]');
       if (goEl) {
         const dest = goEl.dataset.go;
+        const target = document.getElementById(dest);
+        if (!target) return;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(dest).classList.add('active');
+        target.classList.add('active');
         return;
       }
 
       // Add to Cart — route based on deliveryMode
+      // Both attributes may exist on same element; mode is captured first (lines above)
       if (e.target.closest('#btn-add-to-cart')) {
         const dest = deliveryMode === 'local' ? 'screen-4-local' : 'screen-4-nationwide';
+        const target = document.getElementById(dest);
+        if (!target) return;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(dest).classList.add('active');
+        target.classList.add('active');
         return;
       }
     });
