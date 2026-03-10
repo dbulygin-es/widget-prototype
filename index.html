@@ -547,6 +547,47 @@
 
     <!-- SCREEN 2: Product listing -->
     <section class="screen" id="screen-2">
+      <div class="widget-header">
+        <a class="header-back" data-go="screen-1">‹ Back to Categories</a>
+        <div class="header-actions">
+          <div class="header-cart">
+            🛍
+            <span class="cart-badge">1</span>
+          </div>
+          <div class="header-lang">🇬🇧 ∨</div>
+          <span class="header-close">✕</span>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn" data-tab="full-menus">Full Menus</button>
+        <button class="tab-btn" data-tab="products">Products</button>
+        <button class="tab-btn active" data-tab="menus-at-home">Menus at home</button>
+      </div>
+
+      <div class="screen-content">
+        <p class="section-label">Menus at home (2)</p>
+        <div class="product-grid">
+          <div class="product-card" data-go="screen-3">
+            <img src="./widget screens/2026-03-10 16.10.24.jpg" alt="NENI's Signature Easter box for 2" />
+            <div class="product-card-body">
+              <h4>NENI's Signature Easter box for 2 - at home</h4>
+              <p>De Oostmediterrane keuken staat bekend om mezze en andere...</p>
+              <span class="product-price">From €40.00 p.p.</span>
+            </div>
+          </div>
+          <div class="product-card" data-go="screen-3">
+            <img src="./widget screens/2026-03-10 16.10.24.jpg" alt="NENI's Vegetarian Signature Easter box for 2" />
+            <div class="product-card-body">
+              <h4>NENI's Vegetarian Signature Easter box for 2 - at home</h4>
+              <p>De Oostmediterrane keuken staat bekend om mezze en andere...</p>
+              <span class="product-price">From €40.00 p.p.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-footer">Powered by <strong>sous</strong></div>
     </section>
 
     <!-- SCREEN 3: Product detail -->
@@ -567,6 +608,15 @@
       const dest = target.dataset.go;
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(dest).classList.add('active');
+    });
+
+    // Tab switching on screen 2
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
     });
   </script>
 </body>
