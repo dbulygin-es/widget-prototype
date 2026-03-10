@@ -1065,6 +1065,9 @@
     let deliveryMode = 'local';
     let enteredAddress = '';
     let selectedDate = null; // Date object, null until screen-3 is first visited
+    let calYear  = new Date().getFullYear();
+    let calMonth = new Date().getMonth(); // 0-indexed
+    let calOpen  = false;
 
     function isToday(d) {
       const t = new Date();
@@ -1104,6 +1107,52 @@
       return html;
     }
 
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+      'July','August','September','October','November','December'];
+
+    function renderCalendar() {
+      document.getElementById('cal-month-year').textContent =
+        `${MONTH_NAMES[calMonth]} ${calYear}`;
+
+      const today = new Date(); today.setHours(0,0,0,0);
+      const prevBtn = document.getElementById('cal-prev');
+      const thisMonth = new Date(calYear, calMonth, 1);
+      const currentMonth = new Date(); currentMonth.setDate(1); currentMonth.setHours(0,0,0,0);
+      prevBtn.disabled = thisMonth <= currentMonth;
+
+      const firstDay  = new Date(calYear, calMonth, 1).getDay();
+      const offset    = firstDay === 0 ? 6 : firstDay - 1; // Mon-first grid
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+      const WEEKDAYS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+      let html = WEEKDAYS.map(d => `<div class="cal-weekday">${d}</div>`).join('');
+
+      for (let i = 0; i < offset; i++) {
+        html += `<div class="cal-day cal-day--empty"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = new Date(calYear, calMonth, day); d.setHours(0,0,0,0);
+
+        const isPast    = d < today;
+        const isTodayCell = d.getTime() === today.getTime();
+        const isBlockedToday = isTodayCell && deliveryMode === 'nationwide';
+        const isSelected = selectedDate &&
+          d.getTime() === new Date(new Date(selectedDate).setHours(0,0,0,0)).getTime();
+
+        let cls = 'cal-day';
+        if      (isPast)          cls += ' cal-day--disabled';
+        else if (isBlockedToday)  cls += ' cal-day--today-blocked';
+        else if (isSelected)      cls += ' cal-day--selected';
+        else if (isTodayCell)     cls += ' cal-day--today';
+
+        const disabled = isPast || isBlockedToday;
+        html += `<div class="${cls}"${disabled ? '' : ` data-date="${d.toISOString()}"`}>${day}</div>`;
+      }
+
+      document.getElementById('cal-grid').innerHTML = html;
+    }
+
     function updateAddressBar(activeScreenId) {
       const bar = document.getElementById('address-bar');
       if (activeScreenId === 'screen-address') {
@@ -1139,6 +1188,51 @@
 
     // ─── Navigation handler ───
     document.addEventListener('click', function(e) {
+      // Open/close calendar
+      if (e.target.closest('#date-row')) {
+        calOpen = !calOpen;
+        const cal = document.getElementById('calendar');
+        if (calOpen) {
+          const ref = selectedDate || new Date();
+          calYear  = ref.getFullYear();
+          calMonth = ref.getMonth();
+          renderCalendar();
+          cal.style.display = 'block';
+        } else {
+          cal.style.display = 'none';
+        }
+        return;
+      }
+
+      // Prev month
+      if (e.target.closest('#cal-prev')) {
+        e.stopPropagation();
+        calMonth--;
+        if (calMonth < 0) { calMonth = 11; calYear--; }
+        renderCalendar();
+        return;
+      }
+
+      // Next month
+      if (e.target.closest('#cal-next')) {
+        e.stopPropagation();
+        calMonth++;
+        if (calMonth > 11) { calMonth = 0; calYear++; }
+        renderCalendar();
+        return;
+      }
+
+      // Day selection
+      const dayEl = e.target.closest('.cal-day[data-date]');
+      if (dayEl) {
+        e.stopPropagation();
+        selectedDate = new Date(dayEl.dataset.date);
+        updateScreen3Date();
+        document.getElementById('calendar').style.display = 'none';
+        calOpen = false;
+        return;
+      }
+
       // Address bar → return to address entry with pre-filled input
       if (e.target.closest('#address-bar')) {
         document.getElementById('address-input').value = enteredAddress;
