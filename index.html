@@ -970,6 +970,19 @@
     // ─── State ───
     let deliveryMode = 'local';
     let enteredAddress = '';
+    let selectedDate = null; // Date object, null until screen-3 is first visited
+
+    function isToday(d) {
+      const t = new Date();
+      return d.getFullYear() === t.getFullYear() &&
+             d.getMonth()    === t.getMonth()    &&
+             d.getDate()     === t.getDate();
+    }
+
+    function getDeliveryMethod() {
+      if (!selectedDate) return null;
+      return (isToday(selectedDate) && deliveryMode === 'local') ? 'local' : 'nationwide';
+    }
 
     // ─── Helpers ───
     function formatDateShort(d) {
@@ -1008,9 +1021,8 @@
     }
 
     function updateScreen3Date() {
-      const earliest = new Date();
-      if (deliveryMode === 'nationwide') earliest.setDate(earliest.getDate() + 1);
-      document.getElementById('screen3-date').textContent = formatDateShort(earliest);
+      const d = selectedDate || new Date();
+      document.getElementById('screen3-date').textContent = formatDateShort(d);
     }
 
     function navigateTo(destId) {
@@ -1019,7 +1031,16 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       target.classList.add('active');
       updateAddressBar(destId);
-      if (destId === 'screen-3') updateScreen3Date();
+      if (destId === 'screen-3') {
+        if (!selectedDate) {
+          selectedDate = new Date();
+          if (deliveryMode === 'nationwide') selectedDate.setDate(selectedDate.getDate() + 1);
+        }
+        calOpen = false;
+        document.getElementById('calendar').style.display = 'none';
+        updateScreen3Date();
+      }
+      if (destId === 'screen-address') selectedDate = null;
     }
 
     // ─── Navigation handler ───
