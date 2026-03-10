@@ -566,8 +566,47 @@
 <body>
   <div class="widget">
 
+    <!-- SCREEN 0: Address entry -->
+    <section class="screen active" id="screen-address">
+      <div class="widget-header">
+        <span class="header-title">NENI Amsterdam</span>
+        <div class="header-actions">
+          <div class="header-cart">
+            🛍
+            <span class="cart-badge">1</span>
+          </div>
+          <div class="header-lang">🇬🇧 ∨</div>
+          <span class="header-close">✕</span>
+        </div>
+      </div>
+
+      <div class="screen-content">
+        <h2 class="screen-heading">Enter your delivery address</h2>
+        <input
+          class="address-input"
+          type="text"
+          placeholder="Street, house number, city"
+          aria-label="Delivery address"
+        />
+        <button
+          class="btn-primary"
+          data-go="screen-1"
+          data-delivery-mode="local"
+        >Continue</button>
+        <div style="margin-top: 16px; text-align: center;">
+          <button
+            class="btn-link"
+            data-go="screen-1"
+            data-delivery-mode="nationwide"
+          >Nationwide delivery only →</button>
+        </div>
+      </div>
+
+      <div class="widget-footer">Powered by <strong>sous</strong></div>
+    </section>
+
     <!-- SCREEN 1: Category selection -->
-    <section class="screen active" id="screen-1">
+    <section class="screen" id="screen-1">
       <div class="widget-header">
         <span class="header-title">NENI Amsterdam</span>
         <div class="header-actions">
