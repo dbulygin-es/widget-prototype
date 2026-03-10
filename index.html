@@ -576,6 +576,15 @@
       outline: none;
     }
 
+    /* ─── Address screen links ─── */
+    .address-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
     /* ─── Link Button ─── */
     .btn-link {
       background: none;
@@ -736,6 +745,10 @@
             aria-label="Delivery address"
           />
           <button class="btn-primary" data-go="screen-1">Continue</button>
+          <div class="address-links">
+            <a class="btn-link" id="btn-use-location">📍 Use my location</a>
+            <a class="btn-link" data-go="screen-1" data-skip-address="true">I'll pick it up</a>
+          </div>
         </div>
 
         <div class="widget-footer">Powered by <strong>sous</strong></div>
@@ -1158,6 +1171,21 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
         return;
       }
 
+      // Use my location
+      if (e.target.closest('#btn-use-location')) {
+        if (!navigator.geolocation) return;
+        const input = document.getElementById('address-input');
+        input.value = 'Detecting…';
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            // Reverse geocode stub — just show coordinates in the field
+            input.value = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+          },
+          () => { input.value = ''; }
+        );
+        return;
+      }
+
       // Address bar → return to address entry with pre-filled input
       if (e.target.closest('#address-bar')) {
         document.getElementById('address-input').value = enteredAddress;
@@ -1169,9 +1197,9 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
       const goEl = e.target.closest('[data-go]');
       if (goEl) {
         const dest = goEl.dataset.go;
-        // Capture address when leaving screen-address
+        // Capture address when leaving screen-address (skip if pickup link)
         const active = document.querySelector('.screen.active');
-        if (active && active.id === 'screen-address') {
+        if (active && active.id === 'screen-address' && !goEl.dataset.skipAddress) {
           const val = document.getElementById('address-input').value.trim();
           if (!val) {
             document.getElementById('address-input').focus();
