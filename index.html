@@ -173,6 +173,7 @@
       transition: box-shadow 0.15s;
     }
     .category-tile:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    button.category-tile { border: none; text-align: left; width: 100%; font-family: var(--font-sans); background: var(--color-white); }
     .category-tile img {
       width: 80px;
       height: 80px;
@@ -515,29 +516,29 @@
       </div>
 
       <div class="screen-content">
-        <p class="screen-heading">What would you like to order?</p>
+        <h2 class="screen-heading">What would you like to order?</h2>
         <div class="category-list">
-          <div class="category-tile" data-go="screen-2">
+          <button class="category-tile" data-go="screen-2">
             <img src="./widget screens/2026-03-10 16.09.56.jpg" alt="Full Menus" />
             <div class="category-tile-text">
               <h3>Full Menus</h3>
               <p>Explore the share-style dishes and bold Middle Eastern flavours from NENI</p>
             </div>
-          </div>
-          <div class="category-tile" data-go="screen-2">
-            <img src="./widget screens/2026-03-10 16.10.24.jpg" alt="Products" />
+          </button>
+          <button class="category-tile" data-go="screen-2">
+            <img src="./widget screens/2026-03-10 16.10.32.jpg" alt="Products" />
             <div class="category-tile-text">
               <h3>Products</h3>
               <p>Individual items from our kitchen</p>
             </div>
-          </div>
-          <div class="category-tile" data-go="screen-2">
+          </button>
+          <button class="category-tile" data-go="screen-2">
             <img src="./widget screens/2026-03-10 16.10.24.jpg" alt="Menus at home" />
             <div class="category-tile-text">
               <h3>Menus at home</h3>
               <p>Complete meals ready to heat &amp; serve</p>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 
