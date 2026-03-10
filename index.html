@@ -743,7 +743,7 @@
           <span>📅</span>
         </div>
 
-        <button class="btn-primary" data-go="screen-4">Add to Cart</button>
+        <button class="btn-primary" id="btn-add-to-cart">Add to Cart</button>
       </div>
 
       <div class="widget-footer">Powered by <strong>sous</strong></div>
@@ -844,16 +844,35 @@
   </div>
 
   <script>
-    // Navigation: any element with data-go="screen-id" navigates on click
+    // ─── Delivery mode state ───
+    // Set on screen-address; read by Add to Cart to pick the right checkout screen
+    let deliveryMode = 'local';
+
+    // ─── Navigation handler ───
     document.addEventListener('click', function(e) {
-      const target = e.target.closest('[data-go]');
-      if (!target) return;
-      const dest = target.dataset.go;
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(dest).classList.add('active');
+      // Set delivery mode if element declares one
+      const modeEl = e.target.closest('[data-delivery-mode]');
+      if (modeEl) deliveryMode = modeEl.dataset.deliveryMode;
+
+      // Navigate via data-go
+      const goEl = e.target.closest('[data-go]');
+      if (goEl) {
+        const dest = goEl.dataset.go;
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(dest).classList.add('active');
+        return;
+      }
+
+      // Add to Cart — route based on deliveryMode
+      if (e.target.closest('#btn-add-to-cart')) {
+        const dest = deliveryMode === 'local' ? 'screen-4-local' : 'screen-4-nationwide';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(dest).classList.add('active');
+        return;
+      }
     });
 
-    // Tab switching on screen 2
+    // ─── Tab switching on screen-2 ───
     document.querySelectorAll('[data-tab]').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -861,7 +880,8 @@
         this.classList.add('active');
       });
     });
-    // Quantity stepper on screen 3
+
+    // ─── Quantity stepper on screen-3 ───
     const qtyValue = document.getElementById('qty-value');
     document.getElementById('qty-minus').addEventListener('click', function(e) {
       e.stopPropagation();
