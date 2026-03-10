@@ -874,9 +874,21 @@
             <span class="step-badge">3</span>
             <span class="step-label">Date</span>
           </div>
-          <div class="date-row">
+          <div class="date-row" id="date-row" style="cursor:pointer; margin-bottom:0">
             <span id="screen3-date">—</span>
             <span>📅</span>
+          </div>
+
+          <!-- Inline calendar — hidden until date-row is clicked -->
+          <div class="calendar" id="calendar" style="display:none; margin-top:8px">
+            <div class="calendar-header">
+              <button class="cal-nav" id="cal-prev">‹</button>
+              <span class="calendar-month-label" id="cal-month-year"></span>
+              <button class="cal-nav" id="cal-next">›</button>
+            </div>
+            <div class="calendar-grid" id="cal-grid">
+              <!-- populated by renderCalendar() -->
+            </div>
           </div>
 
           <button class="btn-primary" id="btn-add-to-cart">Add to Cart</button>
