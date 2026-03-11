@@ -944,8 +944,9 @@
     <!-- Developer-only demo controls (not part of the widget UI) -->
     <div class="demo-controls">
       <span class="demo-label">Demo controls</span>
-      <label><input type="radio" name="demo-zone" value="local" checked> Local (same-day)</label>
-      <label><input type="radio" name="demo-zone" value="nationwide"> Nationwide (next-day+)</label>
+      <label><input type="radio" name="demo-zone" value="local" checked> Local zone</label>
+      <label><input type="radio" name="demo-zone" value="nationwide"> Nationwide zone</label>
+      <label><input type="checkbox" id="demo-product-eligible" checked> Product local-eligible</label>
     </div>
 
   </div><!-- /.widget-wrapper -->
@@ -953,6 +954,7 @@
   <script>
     // ─── State ───
     let deliveryMode = 'local';
+    let productLocalEligible = true; // product-level flag: can this product be delivered locally?
     let enteredAddress = '';
     let returnScreen = null; // set when user corrects address mid-journey
     let selectedDate = null; // Date object, null until screen-3 is first visited
@@ -969,7 +971,7 @@
 
     function getDeliveryMethod() {
       if (!selectedDate) return null;
-      return (isToday(selectedDate) && deliveryMode === 'local') ? 'local' : 'nationwide';
+      return (isToday(selectedDate) && deliveryMode === 'local' && productLocalEligible) ? 'local' : 'nationwide';
     }
 
     // ─── Helpers ───
@@ -1008,7 +1010,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
 
         const isPast    = d < today;
         const isTodayCell = d.getTime() === today.getTime();
-        const isBlockedToday = isTodayCell && deliveryMode === 'nationwide';
+        const isBlockedToday = isTodayCell && (deliveryMode === 'nationwide' || !productLocalEligible);
         const isSelected = selectedDate &&
           d.getTime() === new Date(new Date(selectedDate).setHours(0,0,0,0)).getTime();
 
@@ -1116,7 +1118,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
       if (destId === 'screen-3') {
         if (!selectedDate) {
           selectedDate = new Date();
-          if (deliveryMode === 'nationwide') selectedDate.setDate(selectedDate.getDate() + 1);
+          if (deliveryMode === 'nationwide' || !productLocalEligible) selectedDate.setDate(selectedDate.getDate() + 1);
         }
         calOpen = false;
         document.getElementById('calendar').style.display = 'none';
@@ -1228,19 +1230,26 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
     });
 
     // ─── Demo controls ───
+    function resetDateForCurrentMode() {
+      selectedDate = null;
+      if (document.getElementById('screen-3').classList.contains('active')) {
+        selectedDate = new Date();
+        if (deliveryMode === 'nationwide' || !productLocalEligible) selectedDate.setDate(selectedDate.getDate() + 1);
+        updateScreen3Date();
+        if (calOpen) renderCalendar();
+      }
+    }
+
     document.querySelectorAll('input[name="demo-zone"]').forEach(function(radio) {
       radio.addEventListener('change', function() {
         deliveryMode = this.value;
-        selectedDate = null; // will re-initialise on next screen-3 visit
-
-        // If currently on screen-3, re-initialise immediately
-        if (document.getElementById('screen-3').classList.contains('active')) {
-          selectedDate = new Date();
-          if (deliveryMode === 'nationwide') selectedDate.setDate(selectedDate.getDate() + 1);
-          updateScreen3Date();
-          if (calOpen) renderCalendar(); // refresh open calendar if visible
-        }
+        resetDateForCurrentMode();
       });
+    });
+
+    document.getElementById('demo-product-eligible').addEventListener('change', function() {
+      productLocalEligible = this.checked;
+      resetDateForCurrentMode();
     });
 
     // ─── Tab switching on screen-2 ───
