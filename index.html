@@ -1186,11 +1186,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
       const isNationwideZone = deliveryMode === 'nationwide';
       const isLocal          = getDeliveryMethod() === 'local';
       s4Method = 'delivery';
-      let html = '';
-      if (!isLocal && isNationwideZone) {
-        html += `<span class="notice-pill amber">Local delivery not available at your address</span>`;
-      }
-      html += `<div id="s4-methods"></div><div id="s4-subcontent"></div>`;
+      let html = `<div id="s4-methods"></div><div id="s4-subcontent"></div>`;
       document.getElementById('screen-4-content').innerHTML = html;
       renderS4Methods();
       renderS4Subcontent();
