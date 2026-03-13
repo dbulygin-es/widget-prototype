@@ -1284,7 +1284,6 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
         navigateTo('screen-4');
         return;
       }
-    });
 
       // Screen 4: method switch (delivery ↔ pickup)
       const methodEl = e.target.closest('[data-method]');
@@ -1314,6 +1313,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
         s4DeliveryTimeIndex = parseInt(deliveryTimeEl.dataset.deliveryTime);
         renderS4Subcontent(); return;
       }
+    });
 
     // ─── Demo controls ───
     function resetDateForCurrentMode() {
