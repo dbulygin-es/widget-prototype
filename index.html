@@ -962,6 +962,12 @@
     let calMonth = new Date().getMonth(); // 0-indexed
     let calOpen  = false;
 
+    // ─── Screen 4 state ───
+    let s4Method          = null;  // 'delivery' | 'pickup'
+    let s4PickupDateIndex = 1;     // selected index in pickup date strip
+    let s4PickupTimeIndex = 0;     // selected index in pickup time slots
+    let s4DeliveryTimeIndex = 0;   // selected index in delivery windows
+
     function isToday(d) {
       const t = new Date();
       return d.getFullYear() === t.getFullYear() &&
@@ -1027,71 +1033,122 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
       document.getElementById('cal-grid').innerHTML = html;
     }
 
-    function renderScreen4() {
-      const isLocal        = getDeliveryMethod() === 'local';
-      const isNationwideZone = deliveryMode === 'nationwide';
-      const dispatchDate   = selectedDate ? formatDateShort(selectedDate) : '—';
-      let html = '';
+    // ─── Screen 4 constants ───
+    const DELIVERY_WINDOWS = ['17:00 – 18:00', '18:00 – 19:00', '19:00 – 20:00'];
+    const PICKUP_TIMES     = ['12:00 – 12:15', '12:15 – 12:30', '12:30 – 12:45', '12:45 – 13:00', '13:00 – 13:15', '13:15 – 13:30'];
 
-      if (!isLocal && isNationwideZone) {
-        html += `<span class="notice-pill amber">Local delivery not available at your address</span>`;
-      }
+    function getPickupDates() {
+      const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const today = new Date();
+      return Array.from({ length: 5 }, (_, i) => {
+        const d = new Date(today); d.setDate(today.getDate() + i);
+        return { day: DAYS[d.getDay()], num: d.getDate(), month: MONS[d.getMonth()] };
+      });
+    }
 
-      if (isLocal) {
-        html += `
-          <div class="radio-row selected">
-            <div class="radio-row-left">
-              <div class="radio-circle checked"></div>
-              <span class="radio-row-label">Local delivery</span>
-            </div>
-            <span style="font-size:13px;font-weight:600;color:var(--color-primary)">€3.50</span>
-          </div>
-          <div class="delivery-option-expanded">
-            <p class="section-heading">Select delivery time</p>
-            <div class="radio-row selected">
-              <div class="radio-row-left">
-                <div class="radio-circle checked"></div>
-                <span class="radio-row-label">17:00 – 18:00</span>
-              </div>
-            </div>
-            <div class="radio-row">
-              <div class="radio-row-left">
-                <div class="radio-circle"></div>
-                <span class="radio-row-label">18:00 – 19:00</span>
-              </div>
-            </div>
-            <div class="radio-row">
-              <div class="radio-row-left">
-                <div class="radio-circle"></div>
-                <span class="radio-row-label">19:00 – 20:00</span>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        html += `
-          <div class="radio-row selected">
-            <div class="radio-row-left">
-              <div class="radio-circle checked"></div>
-              <div>
-                <div class="radio-row-label">Nationwide delivery</div>
-                <div class="radio-row-sublabel">Ships ${dispatchDate} · €5.95</div>
-              </div>
-            </div>
-            <span>🚚</span>
-          </div>`;
-      }
-
-      html += `
-        <div class="radio-row">
+    function renderS4Methods() {
+      const el = document.getElementById('s4-methods');
+      if (!el) return;
+      const isLocal = getDeliveryMethod() === 'local';
+      const deliveryLabel = isLocal ? 'Local delivery' : 'Nationwide delivery';
+      const deliveryRight = isLocal
+        ? `<span style="font-size:13px;font-weight:600;color:var(--color-primary)">€3.50</span>`
+        : `<span>🚚</span>`;
+      const dSel = s4Method === 'delivery';
+      const pSel = s4Method === 'pickup';
+      el.innerHTML = `
+        <div class="radio-row${dSel ? ' selected' : ''}" data-method="delivery">
           <div class="radio-row-left">
-            <div class="radio-circle"></div>
+            <div class="radio-circle${dSel ? ' checked' : ''}"></div>
+            <span class="radio-row-label">${deliveryLabel}</span>
+          </div>
+          ${deliveryRight}
+        </div>
+        <div class="radio-row${pSel ? ' selected' : ''}" data-method="pickup">
+          <div class="radio-row-left">
+            <div class="radio-circle${pSel ? ' checked' : ''}"></div>
             <span class="radio-row-label">Pickup options</span>
           </div>
           <span>🏪</span>
         </div>`;
+    }
 
+    function renderS4Subcontent() {
+      const el = document.getElementById('s4-subcontent');
+      if (!el) return;
+      if (s4Method === 'pickup') {
+        const dates = getPickupDates();
+        el.innerHTML = `
+          <div style="padding-top:20px">
+            <p class="section-heading">Locations</p>
+            <p class="section-sub">There are pickup points near you</p>
+            <div class="location-card">
+              <div class="location-card-left">
+                <div class="radio-circle checked"></div>
+                <div>
+                  <div class="location-name">NENI Amsterdam (Amsterdam)</div>
+                  <div class="location-address">Stadionplein 8, Amsterdam, 1076 CM, NL</div>
+                </div>
+              </div>
+              <span class="location-free">FREE</span>
+            </div>
+            <p class="section-heading">Select Pickup Date</p>
+            <div class="date-pills">
+              ${dates.map((d, i) => `
+                <div class="date-pill${i === s4PickupDateIndex ? ' active' : ''}" data-pickup-date="${i}">
+                  <div class="day-label">${d.day}</div>
+                  <div class="day-num">${d.num}</div>
+                  <div class="month-label">${d.month}</div>
+                </div>`).join('')}
+            </div>
+            <p class="section-heading">Select Pickup Time</p>
+            ${PICKUP_TIMES.map((t, i) => `
+              <div class="radio-row${i === s4PickupTimeIndex ? ' selected' : ''}" data-pickup-time="${i}">
+                <div class="radio-row-left">
+                  <div class="radio-circle${i === s4PickupTimeIndex ? ' checked' : ''}"></div>
+                  <span class="radio-row-label">${t}</span>
+                </div>
+              </div>`).join('')}
+          </div>`;
+      } else {
+        const isLocal = getDeliveryMethod() === 'local';
+        if (isLocal) {
+          el.innerHTML = `
+            <div style="padding-top:20px">
+              <p class="section-heading">Select delivery window</p>
+              ${DELIVERY_WINDOWS.map((t, i) => `
+                <div class="radio-row${i === s4DeliveryTimeIndex ? ' selected' : ''}" data-delivery-time="${i}">
+                  <div class="radio-row-left">
+                    <div class="radio-circle${i === s4DeliveryTimeIndex ? ' checked' : ''}"></div>
+                    <span class="radio-row-label">${t}</span>
+                  </div>
+                </div>`).join('')}
+              <div style="padding:12px 16px;font-size:13px;color:var(--color-muted)">Delivery fee: <strong style="color:var(--color-text)">€3.50</strong></div>
+            </div>`;
+        } else {
+          const dispatchDate = selectedDate ? formatDateShort(selectedDate) : '—';
+          el.innerHTML = `
+            <div style="padding:16px">
+              <div style="font-size:14px;color:var(--color-text)"><strong>Estimated delivery:</strong> ${dispatchDate}</div>
+              <div style="font-size:13px;color:var(--color-muted);margin-top:4px">Delivery fee: <strong style="color:var(--color-text)">€5.95</strong></div>
+            </div>`;
+        }
+      }
+    }
+
+    function renderScreen4() {
+      const isNationwideZone = deliveryMode === 'nationwide';
+      const isLocal          = getDeliveryMethod() === 'local';
+      s4Method = 'delivery';
+      let html = '';
+      if (!isLocal && isNationwideZone) {
+        html += `<span class="notice-pill amber">Local delivery not available at your address</span>`;
+      }
+      html += `<div id="s4-methods"></div><div id="s4-subcontent"></div>`;
       document.getElementById('screen-4-content').innerHTML = html;
+      renderS4Methods();
+      renderS4Subcontent();
     }
 
     function updateAddressBar(activeScreenId) {
@@ -1228,6 +1285,35 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
         return;
       }
     });
+
+      // Screen 4: method switch (delivery ↔ pickup)
+      const methodEl = e.target.closest('[data-method]');
+      if (methodEl) {
+        const m = methodEl.dataset.method;
+        if (s4Method !== m) { s4Method = m; renderS4Methods(); renderS4Subcontent(); }
+        return;
+      }
+
+      // Screen 4: pickup date pill
+      const pickupDateEl = e.target.closest('[data-pickup-date]');
+      if (pickupDateEl) {
+        s4PickupDateIndex = parseInt(pickupDateEl.dataset.pickupDate);
+        renderS4Subcontent(); return;
+      }
+
+      // Screen 4: pickup time slot
+      const pickupTimeEl = e.target.closest('[data-pickup-time]');
+      if (pickupTimeEl) {
+        s4PickupTimeIndex = parseInt(pickupTimeEl.dataset.pickupTime);
+        renderS4Subcontent(); return;
+      }
+
+      // Screen 4: delivery window
+      const deliveryTimeEl = e.target.closest('[data-delivery-time]');
+      if (deliveryTimeEl) {
+        s4DeliveryTimeIndex = parseInt(deliveryTimeEl.dataset.deliveryTime);
+        renderS4Subcontent(); return;
+      }
 
     // ─── Demo controls ───
     function resetDateForCurrentMode() {
